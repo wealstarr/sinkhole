@@ -56,3 +56,14 @@ cmake --build build64 --config RelWithDebInfo -- /m /v:m
 - run `stop` from `src/Scripts`
 - run `uninstall` from `src/Scripts`
 - delete `SvcHostDemo.dll` from `system32`
+
+
+## About Apriorit
+
+This repository is a public technical example from Apriorit related to system and advanced software engineering.
+
+Apriorit is a cybersecurity-focused software engineering company that helps technology companies build secure, reliable, and high-performance software — from kernel-level components to cloud-based platforms.
+
+Learn more: https://www.apriorit.com/rd-services/custom-software-and-application-development-services
+
+Website: https://www.apriorit.com
