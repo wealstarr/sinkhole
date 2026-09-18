@@ -55,4 +55,10 @@ extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(DWORD dwArgc, LPCWSTR* 
     g_serviceStatus.dwCurrentState = SERVICE_RUNNING;
 
     SetServiceStatus(g_serviceStatusHandle, &g_serviceStatus);
+    g_serviceStatus.dwCurrentState = SERVICE_STOPPED;
+    g_serviceStatus.dwWin32ExitCode = ERROR_SUCCESS;
+    g_serviceStatus.dwServiceSpecificExitCode = 0;
+    g_serviceStatus.dwCheckPoint = 0;
+    g_serviceStatus.dwWaitHint = 0;
+    SetServiceStatus(g_serviceStatusHandle, &g_serviceStatus);
 }
