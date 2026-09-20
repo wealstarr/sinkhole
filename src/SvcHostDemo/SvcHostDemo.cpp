@@ -25,8 +25,9 @@ DWORD WINAPI HandlerEx(
     {
     case SERVICE_CONTROL_STOP:
     case SERVICE_CONTROL_SHUTDOWN:
-        g_serviceStatus.dwCurrentState = SERVICE_STOPPED;
-        break;
+    if (g_stopEvent)
+        SetEvent(g_stopEvent);
+    return NO_ERROR;
     case SERVICE_CONTROL_PAUSE:
         g_serviceStatus.dwCurrentState = SERVICE_PAUSED;
         break;
@@ -52,14 +53,23 @@ extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(DWORD dwArgc, LPCWSTR* 
         return;
     }
 
+    g_stopEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    if (!g_stopEvent)
+{
+    return;
+}
+
     g_serviceStatus.dwCurrentState = SERVICE_RUNNING;
 
-        if (!SetServiceStatus(g_serviceStatusHandle, &g_serviceStatus))
+    if (!SetServiceStatus(g_serviceStatusHandle, &g_serviceStatus))
     {
-        return;
+    CloseHandle(g_stopEvent);
+    g_stopEvent = nullptr;
+    return;
+        
     }
 
-    Sleep(30000);
+    WaitForSingleObject(g_stopEvent, INFINITE);
 
     g_serviceStatus.dwCurrentState = SERVICE_STOPPED;
     g_serviceStatus.dwWin32ExitCode = ERROR_SUCCESS;
