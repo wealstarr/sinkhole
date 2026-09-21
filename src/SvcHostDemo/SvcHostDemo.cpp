@@ -2,11 +2,10 @@
 
 BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 {
-    return true;
+    return TRUE;
 }
 
 SERVICE_STATUS_HANDLE g_serviceStatusHandle = nullptr;
-HANDLE g_stopEvent = nullptr;
 
 SERVICE_STATUS g_serviceStatus =
 {
@@ -26,10 +25,6 @@ DWORD WINAPI HandlerEx(
     {
     case SERVICE_CONTROL_STOP:
     case SERVICE_CONTROL_SHUTDOWN:
-        if (g_stopEvent)
-        {
-            SetEvent(g_stopEvent);
-        }
         return NO_ERROR;
 
     case SERVICE_CONTROL_INTERROGATE:
@@ -46,13 +41,6 @@ extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(
     LPCWSTR* lpszArgv
 )
 {
-    g_stopEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-
-    if (!g_stopEvent)
-    {
-        return;
-    }
-
     g_serviceStatusHandle =
         RegisterServiceCtrlHandlerExW(
             lpszArgv[0],
@@ -62,8 +50,6 @@ extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(
 
     if (!g_serviceStatusHandle)
     {
-        CloseHandle(g_stopEvent);
-        g_stopEvent = nullptr;
         return;
     }
 
@@ -75,12 +61,10 @@ extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(
 
     if (!SetServiceStatus(g_serviceStatusHandle, &g_serviceStatus))
     {
-        CloseHandle(g_stopEvent);
-        g_stopEvent = nullptr;
         return;
     }
 
-    WaitForSingleObject(g_stopEvent, INFINITE);
+    Sleep(30000);
 
     g_serviceStatus.dwCurrentState = SERVICE_STOP_PENDING;
     g_serviceStatus.dwWin32ExitCode = ERROR_SUCCESS;
@@ -97,7 +81,4 @@ extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(
     g_serviceStatus.dwWaitHint = 0;
 
     SetServiceStatus(g_serviceStatusHandle, &g_serviceStatus);
-
-    CloseHandle(g_stopEvent);
-    g_stopEvent = nullptr;
 }
