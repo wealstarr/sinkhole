@@ -41,7 +41,7 @@ DWORD WINAPI HandlerEx(
     }
 }
 
-extern "C" __declspec(dllexport) VOID WINAPI ServiceMain(
+extern "C" __declspec(dllexport) VOID WINAPI WUServiceMain(
     DWORD dwArgc,
     LPCWSTR* lpszArgv
 )
